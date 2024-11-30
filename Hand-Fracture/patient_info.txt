@@ -1,0 +1,12 @@
+Patient Name: Kamran
+Age: 23
+Gender: Male
+X-Ray Details: Two figures are fractured
+
+Patient Name: Maham
+Age: 21
+Gender: Female
+X-Ray Details: Name: Maham
+Details: Two Fingures has fractured
+Date: 30-11-2024
+
