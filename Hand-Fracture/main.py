@@ -61,7 +61,7 @@ with st.sidebar:
     st.image("./logo.jpg", width=200, use_column_width=False, output_format="auto", caption="")  # Increase logo width
     selected = option_menu("Main Menu", ["Home", 'Downloads', 'About',  'Contact Us'],
                         icons=['house', 'cloud-arrow-down', 'info-square', 'envelope', ], menu_icon="cast", default_index=0,
-                        styles={"nav-link-selected": {"background-color": "green"}})
+                        styles={"nav-link-selected": {"background-color": "#1f7888"}})
 
 # Home Page
 if selected == "Home":
@@ -86,7 +86,7 @@ if selected == "Home":
             text-decoration: none;
         }}
         .sidebar-link:hover {{
-            color: #ff0000;
+            color: #00000;
         }}
         /* Adjust the form's styling */
         .stForm {{
