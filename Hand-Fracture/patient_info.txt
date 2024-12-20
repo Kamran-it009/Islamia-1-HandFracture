@@ -1,12 +1,22 @@
 Patient Name: Kamran
-Age: 23
+Age: 27
 Gender: Male
-X-Ray Details: Two figures are fractured
+X-Ray Details: Two Figures has been fractured.
+1- Frature: Middle Fingure
+2- Ring Fingure
 
-Patient Name: Maham
-Age: 21
+Patient Name: ahad
+Age: 20
 Gender: Female
-X-Ray Details: Name: Maham
-Details: Two Fingures has fractured
-Date: 30-11-2024
+X-Ray Details: xihiowdi
+
+Patient Name: ahad
+Age: 20
+Gender: Male
+X-Ray Details: This is my Xray
+
+Patient Name: ahad
+Age: 20
+Gender: Male
+X-Ray Details: This is my xray of hand 
 

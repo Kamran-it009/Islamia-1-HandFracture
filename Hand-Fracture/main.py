@@ -1,178 +1,159 @@
-import streamlit as st 
-from detector import detection
+import streamlit as st
 import base64
-from PIL import Image
-from streamlit_option_menu import option_menu
 
-# Function to encode image to base64
+
+
+# Page Configuration
+st.set_page_config(page_title="Hand Fracture Detection System", layout="wide")
+
+# Function to Encode Image in Base64
 def get_base64_image(image_path):
     with open(image_path, "rb") as img_file:
         return base64.b64encode(img_file.read()).decode()
 
-# Set page configuration
-st.set_page_config(page_title="YOLOv8 Detection App", layout="wide")
+# Load Background and Logo Images
+background_image = get_base64_image("./hands_png.png")  # Ensure this file exists in the same directory
+logo_image = get_base64_image("./logo_png.png")  # Ensure this file exists in the same directory
 
-# Load the background image and convert it to base64
-background_image = get_base64_image("./bgimg.jpg")
-
-page_bg_img = f'''
+# Custom CSS for Logo, "HFDS" Text, and Layout
+page_bg_img = f"""
 <style>
-        /* Minimalist Sidebar styling */
-        [data-testid=stSidebar] {{
-            background-color: white;
-            padding: 20px;
-        }}
-        /* Sidebar link styling */
-        .sidebar-link {{
-            display: block;
-            padding: 10px 0;
-            font-size: 18px;
-            color: #333;
-            text-decoration: none;
-        }}
-        .sidebar-link:hover {{
-            color: #ff0000;
-        }}
-        /* Add margin to move the images down by 50px */
-        .image-container img {{
-            margin-top: 50px;
-        }}
-</style>
-'''
+    /* Black background for the app */
+    .stApp {{
+        background-color: black;
+        color: white;
+    }}
+    /* Logo and HFDS Text Styling */
+    .logo-section {{
+        position: fixed;
+        top: 10%;
+        left: 3%;
+        display: flex;
+        align-items: center; /* Align logo and text vertically */
+        gap: 0px; /* Space between logo and text */
+        z-index: 10;
+    }}
+    .logo-container img {{
+        max-width: 80px; /* Adjust logo size */
+        height: 80px;
+    }}
+    .logo-text {{
+        font-size: 1.5rem;
+        font-weight: bold;
+        color: white;
+        text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.7);
+        margin: 0;
+    }}
+    /* Main content on the left */
+    .main-content {{
+        position: fixed;
+        top: 30%; /* Adjusted to align text vertically */
+        left: 5%; /* Align with the logo */
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start; /* Align items vertically */
+        align-items: flex-start; /* Align items to the left */
+        text-align: left; /* Align text to the left */
+        color: white;
+        text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.7);
+    }}
+    .title-primary {{
+        font-size: 2.1rem;
+        font-weight: normal;
+        margin-bottom: -1.5rem;
+        color: white;
+    }}
+    .title-secondary {{
+        font-size: 4rem; /* Adjust font size */
+        font-weight: bold;
+        margin-bottom: -0.5rem;
+        letter-spacing: 0.3em; /* Increase spacing between letters */
+        color: white; /* Set text color */
+        font-family: 'Futura'; /* Use Futura or fallback to Arial   'Arial', sans-serif */
+        text-transform: uppercase; /* Convert text to uppercase */
+    }}
+    .subtitle {{
+        font-size: 1.4rem;
+        font-weight: 300;
+        margin-bottom: 2rem;
+    }}
+    .button-container {{
+        display: flex;
+        flex-direction: column; /* Stack buttons vertically */
+        gap: 15px; /* Reduce spacing between buttons */
+        margin-top: 1rem;
+    }}
+    .button {{
+        padding: 12px 48px; /* Smaller buttons with adjusted padding */
+        font-size: 1rem;
+        font-weight: bold;
+        color: white !important; /* Force white text */
+        background: linear-gradient(90deg, #007B77, #00A8A8); /* Gradient background */
+        border: none;
+        border-radius: 20px;
+        text-decoration: none;
+        cursor: pointer;
+        transition: background 0.3s ease, transform 0.2s ease;
+    }}
+    .button:hover {{
+        background: linear-gradient(90deg, #005A5A, #007777);
+        transform: scale(1.05); /* Slightly enlarge the button on hover */
+    }}
+    /* Image on the right side */
+    .image-container {{
+        position: fixed;
+        top: 57%;
+        right: 7%; /* Adjust this to control horizontal positioning */
+        transform: translateY(-50%);
+        max-width: 100%; /* Adjusted smaller image size */
+        max-height: 100%; /* Maintain proportional scaling */
 
-# Inject custom CSS
+    }}
+</style>
+"""
+
+# Inject Custom CSS
 st.markdown(page_bg_img, unsafe_allow_html=True)
 
-# Sidebar Menu
-with st.sidebar:
-    # Custom CSS to adjust the logo position
-    st.markdown(
-        '''
-        <style>
-            /* Move the logo upwards by 100px */
-            img {
-                margin-top: -100px;  
-            }
-        </style>
-        ''',
-        unsafe_allow_html=True
-    )
-    # Increase logo width
-    st.image("./logo.jpg", width=200, use_column_width=False, output_format="auto", caption="")  # Increase logo width
-    selected = option_menu("Main Menu", ["Home", 'Downloads', 'About',  'Contact Us'],
-                        icons=['house', 'cloud-arrow-down', 'info-square', 'envelope', ], menu_icon="cast", default_index=0,
-                        styles={"nav-link-selected": {"background-color": "#1f7888"}})
+# Add Logo and "HFDS" Text at the Top-Left Corner
+st.markdown(f"""
+    <div class="logo-section">
+        <div class="logo-container">
+            <img src="data:image/jpeg;base64,{logo_image}" alt="Logo">
+        </div>
+        <div class="logo-text">HFDS</div>
+    </div>
+""", unsafe_allow_html=True)
 
-# Home Page
-if selected == "Home":
-    # Custom CSS for background image
-    page_bg_img = f'''
-    <style>
-        .stApp {{
-            background-image: url("data:image/jpg;base64,{background_image}");
-            background-size: cover;
-        }}
-        /* Minimalist Sidebar styling */
-        [data-testid=stSidebar] {{
-            background-color: white;
-            padding: 20px;
-        }}
-        /* Sidebar link styling */
-        .sidebar-link {{
-            display: block;
-            padding: 10px 0;
-            font-size: 18px;
-            color: #333;
-            text-decoration: none;
-        }}
-        .sidebar-link:hover {{
-            color: #00000;
-        }}
-        /* Adjust the form's styling */
-        .stForm {{
-            background-color: rgba(255, 255, 255, 0.8);
-            padding: 20px;
-            border-radius: 10px;
-        }}
-        h1 {{
-            color: white;
-        }}
-    </style>
-    '''
-    # Inject custom CSS
-    st.markdown(page_bg_img, unsafe_allow_html=True)
+# Main Content on the Left
+st.markdown("""
+    <div class="main-content">
+        <div class="title-primary"> H A N D</div>
+        <div class="title-secondary">FRACTURE</div>
+        <div class="subtitle">DETECTION  SYSTEM</div>
+        <div class="button-container">
+            <a href="/Patient_Info" target="_self" class="button">Patient Info</a>
+            <a href="#" class="button">Download</a>
+        </div>
+    </div>
+""", unsafe_allow_html=True)
 
-    st.title("HF X-Ray")
+# Image on the Right
+st.markdown(f"""
+    <div class="image-container">
+        <img src="data:image/jpeg;base64,{background_image}" alt="Hand Fracture Image" style="width: 100%; height: auto;">
+    </div>
+""", unsafe_allow_html=True)
 
-    # Form for patient information and image upload
-    with st.form(key='patient_info_form'):
-        st.subheader("Patient Information")
-        patient_name = st.text_input("Patient Name")
-        age = st.number_input("Age", min_value=0)
-        gender = st.selectbox("Gender", ["Select", "Male", "Female", "Other"])
 
-        # Image Upload
-        uploaded_image = st.file_uploader("Upload an image", type=["jpg", "png", "jpeg"])
 
-        # Detect button
-        detect_button = st.form_submit_button("Detect")
 
-        if detect_button:
-            if uploaded_image is not None:
-                with open("temp_image.jpg", "wb") as f:
-                    f.write(uploaded_image.getbuffer())
 
-                # Resize the uploaded image to match the size of the detected image (300x250)
-                image = Image.open(uploaded_image)
-                resized_uploaded_image = image.resize((300, 250))
 
-                # Columns for inline display of images with CSS class to move them down
-                col1, col2 = st.columns(2)
+#_________________________________________________________________________________#
 
-                # Display resized uploaded image in the first column
-                with col1:
-                    st.markdown('<div class="image-container">', unsafe_allow_html=True)
-                    st.image(resized_uploaded_image, caption="Uploaded Image", use_column_width=True)
-                    st.markdown('</div>', unsafe_allow_html=True)
 
-                # Run YOLOv8 detection on the uploaded image and get resized detection result
-                detected_image = detection("temp_image.jpg")
 
-                # Display the detected image in the second column
-                with col2:
-                    st.markdown('<div class="image-container">', unsafe_allow_html=True)
-                    st.image(detected_image, caption="Detection Results", use_column_width=True)
-                    st.markdown('</div>', unsafe_allow_html=True)
-            else:
-                st.error("Please upload an image.")
 
-        # X-Ray Details input below images
-        xray_details = st.text_area("X-Ray Details")
 
-        # Final Submit button to save patient info
-        submit_button = st.form_submit_button("Submit Patient Info")
 
-        if submit_button:
-            # Write patient information to a text file
-            with open("patient_info.txt", "a") as f:
-                f.write(f"Patient Name: {patient_name}\n")
-                f.write(f"Age: {age}\n")
-                f.write(f"Gender: {gender}\n")
-                f.write(f"X-Ray Details: {xray_details}\n\n")
-            st.success("Patient information saved successfully.")
-
-elif selected == 'Downloads':
-    st.header('Downloads', divider='rainbow')
-    st.write(':green[**Dataset:**    **https://www.kaggle.com/code/yousefzidan101/skindiseas/input**]')
-    st.write(':green[**Code:**]')
-
-elif selected == 'About':
-    st.header('About', divider='rainbow')
-    st.write(':blue[**Draikin is a prediagnostic progressive web app that helps to scan and analyse skin pathology.**]')
-
-else:
-    st.header('Contact Us', divider='rainbow')
-    st.write(':blue[If you have any questions about this Progressive Web App. You can contact us:]')
-    st.write(':green[**By email: motubas@gmail.com**]')
-
-st.sidebar.success('Select the above page')
