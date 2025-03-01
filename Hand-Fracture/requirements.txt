@@ -9,3 +9,4 @@ fpdf
 
 #run the app with this command 
 #streamlit run main.py --client.showSidebarNavigation=false
+#
